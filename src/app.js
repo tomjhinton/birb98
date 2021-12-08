@@ -327,7 +327,7 @@ const createPlayer = (width, height, depth, position) =>{
       music()
       music()
       // console.log('rat')
-      sOrR.innerHTML = 'Snake Noodle?'
+      sOrR.innerHTML = 'Snake Noodles?'
 
       localVelocity = new CANNON.Vec3(0, 0, 1);
       body.quaternion.vmult(localVelocity, body.velocity );
@@ -339,6 +339,7 @@ const createPlayer = (width, height, depth, position) =>{
       scene.remove(ratMesh);
       ratMesh.geometry.dispose();
       ratMesh.material.dispose();
+      world.removeBody(ratBody)
 
       let x = startPos.x
       let z = startPos.z
@@ -482,13 +483,13 @@ document.onkeydown = function(e) {
   e.preventDefault()
            switch (e.keyCode) {
                case 37:
-                console.log(body)
+                // console.log(body)
                 //Left
                 // console.log(getShootDirection())
                    body.angularVelocity.y+=1
                    break;
                case 38:
-               console.log(getShootDirection().z)
+               // console.log(getShootDirection().z)
                     // body.angularVelocity.z+=getShootDirection().z
                     //   body.angularVelocity.y+=getShootDirection().y
                     //     body.angularVelocity.x+=getShootDirection().x
@@ -516,8 +517,9 @@ document.onkeydown = function(e) {
                 player.geometry.dispose();
                 player.material.dispose();
                 player = undefined
+                  world.removeBody(body)
               }
-                // world.remove(body)
+
                 createPlayer(.6,.6, .6, startPos )
                   body.position.copy(startPos)
                     reset.style.visibility = 'hidden'
@@ -556,7 +558,7 @@ const tick = () =>{
     player.material.dispose();
     scene.remove(player);
     player = undefined
-    // world.remove(body)
+    world.removeBody(body)
   }
 
   // Update controls
@@ -566,26 +568,7 @@ const tick = () =>{
   camera.quaternion.copy(body.quaternion)
 }
 
-  // gsap.to( camera.position, {
-  //
-  //                   duration: .1,
-  //
-  //                   x: body.position.x,
-  //
-  //                   y: body.position.y,
-  //
-  //                   z: body.position.z,
-  //
-  //                   onUpdate: function() {
-  //
-  //
-  //
-  //                   }
-  //
-  //               } );
-  // if(sceneGroup){
-  //   sceneGroup.needsUpdate = true
-  // }
+
 
 
 

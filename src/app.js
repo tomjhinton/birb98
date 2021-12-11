@@ -293,7 +293,8 @@ const createPlayer = (width, height, depth, position) =>{
     positon: new CANNON.Vec3(0, 3, 0),
     shape: playerShape,
     material: defaultMaterial,
-    name: 'player'
+    name: 'player',
+    allowSleep: false
   })
   body.position.copy(player.position)
 
@@ -315,6 +316,10 @@ const createPlayer = (width, height, depth, position) =>{
 
       var localVelocity = new CANNON.Vec3(0, 0, 1);
       body.quaternion.vmult(localVelocity, body.velocity );
+
+
+
+
       body.quaternion.setFromAxisAngle(
         new CANNON.Vec3(-1, 0, 0),
         Math.PI *3
@@ -360,7 +365,6 @@ const createPlayer = (width, height, depth, position) =>{
 } } )}
 
 
-// createPlayer(.6, .6, .6, {x: 0, y: 0, z: 15})
 
 
 
@@ -381,20 +385,120 @@ for(let i= 0; i <= 10; i++){
 
 // Math.floor(Math.random() *
 let sceneGroup, snakesMesh, snakeBody
-var maze=  [
-[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0],
-[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,1],
-[0,0,1,1,1,0,0,1,1,0,0,1,0,0,0,0,1,0,0,1],
-[0,0,1,0,1,0,0,1,1,0,0,1,0,0,0,0,0,0,0,1],
-[0,0,1,0,1,1,0,1,0,0,0,1,1,1,0,0,1,0,0,0],
-[0,0,1,1,0,1,1,0,0,0,0,0,0,1,0,0,1,1,1,1],
-[0,0,0,1,1,0,1,1,1,1,1,1,0,0,0,0,0,1,0,1],
-[0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0],
-[3,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,4,0,1],
+let maze1=  [
+
+  [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,1],
+  [0,0,1,1,1,0,0,1,1,0,0,1,0,0,0,0,1,0,0,1],
+  [0,0,1,0,0,0,0,1,1,0,0,1,0,0,0,0,0,0,0,1],
+  [0,0,1,0,0,1,0,1,0,0,0,1,1,1,0,0,1,0,0,0],
+  [0,0,1,1,0,1,1,0,0,0,0,0,0,1,0,0,1,1,1,1],
+  [0,0,0,1,1,0,1,1,1,1,1,1,0,0,0,0,0,1,0,1],
+  [0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0],
+  [3,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,4,0,1]
 
 
-];
+]
+
+let maze2=  [
+
+  [0,0,1,1,0,0,0,1,0,0,0,1,1,0,0,0,1,0,0,0],
+  [0,0,1,0,0,2,0,0,0,0,0,1,0,0,0,0,1,0,0,1],
+  [0,0,1,0,1,0,0,1,1,0,0,0,0,0,0,0,1,0,0,1],
+  [0,0,1,0,0,0,0,1,1,0,0,1,0,0,0,0,0,0,0,1],
+  [0,0,1,0,0,1,0,1,0,0,0,1,1,1,0,0,1,3,0,0],
+  [0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1],
+  [0,0,0,1,1,0,1,1,1,1,1,1,0,0,0,0,0,1,0,1],
+  [0,4,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0,0,0,0],
+  [0,0,0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0,0,0],
+  [0,0,0,1,1,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1]
+
+
+]
+
+let maze3=  [
+
+  [0,0,1,1,0,0,0,1,1,0,0,1,1,0,0,0,1,0,0,2],
+  [0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,1],
+  [0,0,1,1,1,1,0,1,1,0,0,1,0,0,0,0,1,0,0,1],
+  [0,0,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,1,1,0,0,0],
+  [1,0,0,1,0,1,1,0,0,3,0,0,0,0,0,0,1,1,1,1],
+  [1,0,0,1,1,0,0,1,1,1,1,1,0,0,0,0,0,1,0,1],
+  [0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0,0,0,0],
+  [0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0,0,0],
+  [0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,0,4,0,0,1]
+
+
+]
+
+
+
+
+
+let mazeArray = [ maze1, maze2, maze3]
+
+let maze = mazeArray[Math.floor(Math.random() * mazeArray.length)]
+
+//https://weblog.jamisbuck.org/2015/10/31/mazes-blockwise-geometry.html
+//It’s not hard at all to draw a maze in this style. For every cell in your grid, you just divide it into quarters, like this:
+
+
+
+//The northwest subcell (A) will always be a passage, and the southeast subcell (D) will always be a wall. Then, depending on whether the cell has a connection to the south and east cells, the southwest (C) and northeast (B) subcells will either be walls or passages, as follows:
+
+//If the original cell is linked to its southern neighbor, make the southwest subcell (C) a passage; otherwise, make it a wall.
+//If the original cell is linked to its eastern neighbor, make the northeast subcell (B) a passage; otherwise, make it a wall.
+
+
+
+function mazeCreate(x, y){
+  maze = []
+
+  for(let i = 0; i <x; i ++){
+    maze.push([])
+  }
+
+  for(let i = 0; i <x; i ++){
+    for(let j = 0; j <y; j ++){
+      maze[i][j] = 0
+    }
+  }
+
+  maze[2][0] = 1
+  for(let i = 1; i <x -1; i ++){
+    for(let j = 1; j <y -1; j ++){
+      // if(maze[i][j-1] === 0 || maze[i][j-1] === 0){
+      //   maze[i][j] = 1
+      maze[i][j] = Math.floor(Math.random() * 2)
+
+
+      if(maze[i][j+2] === 1){
+        maze[i][j] = 1
+        maze[i+1][j+1] = 1
+        maze[i][j+1] = 0
+        maze[i +1][j+1] = 0
+
+      }
+
+
+      // }
+    }
+  }
+
+
+}
+
+// mazeCreate(10, 20)
+// maze[3][4] = 2
+//
+//
+// maze[5][6] = 3
+//
+// maze[7][9] = 4
+
+
 let startPos
 for(let i= 0; i <= maze.length -1; i++){
   for(let j= 0; j <= maze[i].length-1; j++){
@@ -458,25 +562,10 @@ for(let i= 0; i <= maze.length -1; i++){
   }
 
 
-
-
-    // createBox(1,1,1, {x: Math.floor(Math.random() * i), y: +1, z: Math.floor(Math.random() * j)})
-
-
-
 }
 
 
 body.allowSleep = false
-
-function getShootDirection() {
-          const vector = new THREE.Vector3(0, 0, 1)
-          vector.unproject(camera)
-          const ray = new THREE.Ray(player.position, vector.sub(player.position).normalize())
-          return ray.direction
-        }
-
-
 
 
 document.onkeydown = function(e) {
@@ -489,10 +578,7 @@ document.onkeydown = function(e) {
                    body.angularVelocity.y+=1
                    break;
                case 38:
-               // console.log(getShootDirection().z)
-                    // body.angularVelocity.z+=getShootDirection().z
-                    //   body.angularVelocity.y+=getShootDirection().y
-                    //     body.angularVelocity.x+=getShootDirection().x
+
                     var localVelocity = new CANNON.Vec3(0, 0, -1);
                     body.quaternion.vmult(localVelocity, body.velocity );
 
@@ -502,10 +588,7 @@ document.onkeydown = function(e) {
                     body.angularVelocity.y-=1
                    break;
                case 40:
-                 // body.velocity.z+=1
-                 // body.angularVelocity.z-=getShootDirection().z
-                 //   body.angularVelocity.y-=getShootDirection().y
-                 //     body.angularVelocity.x-=getShootDirection().x
+
 
                   localVelocity = new CANNON.Vec3(0, 0, 1);
                  body.quaternion.vmult(localVelocity, body.velocity);
@@ -563,10 +646,10 @@ const tick = () =>{
 
   // Update controls
   // controls.update()
-  if(body){
+//   if(body){
   camera.position.copy(body.position)
   camera.quaternion.copy(body.quaternion)
-}
+// }
 
 
 
@@ -686,17 +769,43 @@ const synthArr = [ synth, metal]
 const synthArr2 = [ bass, am]
 
 function music(){
-  let index = 0
+
+
+  let notesArray = [
+
+    [notes[Math.floor(Math.random() * notes.length)]
+      , [notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)]]
+      , notes[Math.floor(Math.random() * notes.length)], [notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)]]
+      , notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], [notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)]]],
+
+
+    [notes[Math.floor(Math.random() * notes.length)]
+      , notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)]
+      , notes[Math.floor(Math.random() * notes.length)], [notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)]]
+      , notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], [notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)]]]
+
+
+    //   ,
+    //
+    //
+    //   [[notes[Math.floor(Math.random() * notes.length)], [notes[Math.floor(Math.random() * notes.length)] [notes[Math.floor(Math.random() * notes.length)],notes[Math.floor(Math.random() * notes.length)]], notes[Math.floor(Math.random() * notes.length)]]] ,notes[Math.floor(Math.random() * notes.length)] ,notes[Math.floor(Math.random() * notes.length)] ,notes[Math.floor(Math.random() * notes.length)],
+    //   [notes[Math.floor(Math.random() * notes.length)] [notes[Math.floor(Math.random() * notes.length)] [notes[Math.floor(Math.random() * notes.length)],notes[Math.floor(Math.random() * notes.length)]], notes[Math.floor(Math.random() * notes.length)]]]
+    // ]
+
+
+
+
+
+  ]
+
+
   // sampler.triggerAttackRelease(["A2", "E1", "G1", "B1"], 0.5);
 if (Tone.Transport.state !== 'started') {
   Tone.start()
    seq = new Tone.Sequence((time, note) => {
   sampler.triggerAttackRelease(note, 1.9, time);
   // subdivisions are given as subarrays
-}, [notes[Math.floor(Math.random() * notes.length)]
-    , [notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)]]
-    , notes[Math.floor(Math.random() * notes.length)], [notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)]]
-    , notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)], [notes[Math.floor(Math.random() * notes.length)], notes[Math.floor(Math.random() * notes.length)]]]).start(0);
+}, notesArray[Math.floor(Math.random() * notesArray.length)]).start(0);
 
 
 
@@ -723,6 +832,8 @@ if (Tone.Transport.state !== 'started') {
   } else {
     Tone.Transport.stop()
     seq.dispose()
+    seq2.stop()
+    seq3.stop()
     seq2.dispose()
     seq3.dispose()
 

@@ -350,15 +350,15 @@ const createPlayer = (width, height, depth, position) =>{
       let z = startPos.z
 
       while(maze[x][z] !== 0 && maze[x][z] !== 0){
-        console.log(x)
-        console.log(z)
+        // console.log(x)
+        // console.log(z)
         x = Math.floor(Math.random() * maze.length)
        z=  Math.floor(Math.random() * maze[0].length)
        // console.log(x)
 
       if(  maze[x][z] ===0 && maze[x][z] === 0){
           createRat(.6, .6,.6, {x: x , y: 0, z: z })
-          console.log('created')
+          // console.log('created')
     }
     }
 
